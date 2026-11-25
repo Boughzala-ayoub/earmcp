@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install lightweight audio & MCP deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install "mcp[cli]>=2.3" "librosa>=0.11" matplotlib soundfile numpy
+      - name: Syntax & DSP tool smoke check
+        run: |
+          python -m py_compile server.py selftest.py
+          python -c "
+          import tempfile, os, numpy as np, soundfile as sf, server
+          with tempfile.TemporaryDirectory() as d:
+              sr = 22050
+              t = np.arange(2 * sr) / sr
+              p = os.path.join(d, 'tone.wav')
+              sf.write(p, 0.5 * np.sin(2 * np.pi * 440 * t), sr)
+              a = server.analyze_audio(p)
+              assert abs(a['dominant_freq_hz'] - 440) < 15, a
+              sp = server.spectrogram(p, start=0, duration=2)
+              assert len(sp) == 2 and sp[0].data[:4] == b'\x89PNG'
+              print('CI smoke passed:', a['dominant_note'], a['dominant_freq_hz'])
+          "
