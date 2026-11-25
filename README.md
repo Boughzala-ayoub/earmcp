@@ -1,5 +1,7 @@
 # earmcp
 
+[![CI](https://github.com/Boughzala-ayoub/earmcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Boughzala-ayoub/earmcp/actions/workflows/ci.yml)
+
 An MCP server that gives AI coding agents **"ears"** to understand local audio files — running **100% locally** with zero cloud API calls.
 
 ![Sample waveform and mel spectrogram output](selftest_spectrogram.png)
@@ -19,13 +21,19 @@ All four tools accept `start` and `duration` (seconds) to inspect slices of long
 
 ```bash
 python -m venv .venv
-.venv/Scripts/pip install -r requirements.txt   # Linux/macOS: .venv/bin/pip install -r requirements.txt
+# Linux / macOS
+.venv/bin/pip install -r requirements.txt
+# Windows
+.venv\Scripts\pip install -r requirements.txt
 ```
 
 ### Register with Claude Code (or any stdio MCP client)
 
 ```bash
-claude mcp add earmcp --scope user -- /absolute/path/to/.venv/Scripts/python.exe /absolute/path/to/server.py
+# Linux / macOS
+claude mcp add earmcp --scope user -- /absolute/path/to/.venv/bin/python /absolute/path/to/server.py
+# Windows
+claude mcp add earmcp --scope user -- C:/absolute/path/to/.venv/Scripts/python.exe C:/absolute/path/to/server.py
 ```
 
 ### Swap Hugging Face models (optional)
